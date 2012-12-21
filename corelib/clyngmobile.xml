@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="clyngmobile" default="all">
+  
+  
+  <property file="clyngmobile.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/.bundle/**"/>
+    <exclude name="**/*.rbc/**"/>
+  </patternset>
+  <patternset id="compiler.excluded">
+    <exclude name="${basedir}/gen/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.zip"/>
+    <include name="*.apk"/>
+    <include name="*.war"/>
+    <include name="*.egg"/>
+    <include name="*.ear"/>
+    <include name="*.ane"/>
+    <include name="*.swc"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+    <include name="**/?*.ftl"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.android_2.2_google_apis" value="${jdk.home.android_2.2_google_apis}"/>
+  <path id="jdk.classpath.android_2.2_google_apis">
+    <fileset dir="${jdk.home.android_2.2_google_apis}">
+      <include name="platforms/android-8/android.jar"/>
+      <include name="add-ons/addon_google_apis_google_inc_8/libs/maps.jar"/>
+      <include name="platforms/android-8/data/res"/>
+      <include name="tools/support/annotations.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.6}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.6}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.6"/>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module ClyngMobile -->
+  
+  <dirname property="module.clyngmobile.basedir" file="${ant.file}"/>
+  
+<!--  
+  <property name="module.jdk.home.clyngmobile" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/"/>
+  <property name="module.jdk.bin.clyngmobile" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/bin"/>
+  
+-->
+  <property name="module.jdk.classpath.clyngmobile" value="jdk.classpath.android_2.2_google_apis"/>
+  
+  <property name="compiler.args.clyngmobile" value="${compiler.args}"/>
+  
+  <property name="clyngmobile.output.dir" value="${module.clyngmobile.basedir}/out/production/ClyngMobile"/>
+  <property name="clyngmobile.testoutput.dir" value="${module.clyngmobile.basedir}/out/test/ClyngMobile"/>
+  
+  <path id="clyngmobile.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="clyngmobile.module.production.classpath">
+    <path refid="${module.jdk.classpath.clyngmobile}"/>
+  </path>
+  
+  <path id="clyngmobile.runtime.production.module.classpath">
+    <pathelement location="${clyngmobile.output.dir}"/>
+  </path>
+  
+  <path id="clyngmobile.module.classpath">
+    <path refid="${module.jdk.classpath.clyngmobile}"/>
+    <pathelement location="${clyngmobile.output.dir}"/>
+  </path>
+  
+  <path id="clyngmobile.runtime.module.classpath">
+    <pathelement location="${clyngmobile.testoutput.dir}"/>
+    <pathelement location="${clyngmobile.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.clyngmobile">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.clyngmobile">
+    <patternset refid="compiler.excluded"/>
+    <patternset refid="excluded.from.module.clyngmobile"/>
+  </patternset>
+  
+  <path id="clyngmobile.module.sourcepath">
+    <dirset dir="${module.clyngmobile.basedir}">
+      <include name="src"/>
+      <include name="gen"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.clyngmobile" depends="compile.module.clyngmobile.production,compile.module.clyngmobile.tests" description="Compile module ClyngMobile"/>
+  
+  <target name="compile.module.clyngmobile.production" description="Compile module ClyngMobile; production classes">
+    <mkdir dir="${clyngmobile.output.dir}"/>
+    <javac destdir="${clyngmobile.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+      <compilerarg line="${compiler.args.clyngmobile}"/>
+      <bootclasspath refid="clyngmobile.module.bootclasspath"/>
+      <classpath refid="clyngmobile.module.production.classpath"/>
+      <src refid="clyngmobile.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.clyngmobile"/>
+    </javac>
+    <copy todir="${clyngmobile.output.dir}">
+      <fileset dir="${module.clyngmobile.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+        <patternset refid="excluded.from.compilation.clyngmobile"/>
+      </fileset>
+      <fileset dir="${module.clyngmobile.basedir}/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+        <patternset refid="excluded.from.compilation.clyngmobile"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.clyngmobile.tests" depends="compile.module.clyngmobile.production" description="compile module ClyngMobile; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.clyngmobile" description="cleanup module">
+    <delete dir="${clyngmobile.output.dir}"/>
+    <delete dir="${clyngmobile.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.clyngmobile" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.clyngmobile" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.clyngmobile:jar" value="${basedir}/out/artifacts/ClyngMobile_jar"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.ClyngMobile.jar" value="${artifacts.temp.dir}/ClyngMobile.jar"/>
+  </target>
+  
+  <target name="artifact.clyngmobile:jar" depends="init.artifacts, compile.module.clyngmobile" description="Build &#39;ClyngMobile:jar&#39; artifact">
+    <property name="artifact.temp.output.clyngmobile:jar" value="${artifacts.temp.dir}/ClyngMobile_jar"/>
+    <mkdir dir="${artifact.temp.output.clyngmobile:jar}"/>
+    <jar destfile="${temp.jar.path.ClyngMobile.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+      <zipfileset dir="${clyngmobile.output.dir}"/>
+    </jar>
+    <copy file="${temp.jar.path.ClyngMobile.jar}" tofile="${artifact.temp.output.clyngmobile:jar}/ClyngMobile.jar"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.clyngmobile:jar" description="Build all artifacts">
+    <mkdir dir="${artifact.output.clyngmobile:jar}"/>
+    <copy todir="${artifact.output.clyngmobile:jar}">
+      <fileset dir="${artifact.temp.output.clyngmobile:jar}"/>
+    </copy>
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+</project>

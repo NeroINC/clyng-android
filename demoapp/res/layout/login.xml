@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical">
+
+    <TextView android:id="@+id/version"
+              android:textColor="#fff"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="5dp"
+              android:layout_marginLeft="20dp"
+              android:layout_marginRight="20dp"
+              android:text="Version"
+            />
+
+    <EditText
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/txtServer"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:text=""
+            android:hint="server"/>
+
+
+    <EditText
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="25dp"
+            android:id="@+id/txtUserId"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:singleLine="true"
+            android:hint="user id"
+            />
+
+
+    <EditText
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/txtPassword"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:hint="password"
+            android:singleLine="true"
+            android:inputType="textPassword"
+            />
+
+    <EditText
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/txtEmail"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:hint="email (optional)"
+            android:singleLine="true"
+            android:inputType="textEmailAddress"
+            />
+
+    <Button
+            android:layout_marginTop="5dp"
+            android:layout_width="150dip"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnLogin"
+            android:layout_gravity="center_horizontal"
+            android:text="Continue"
+            />
+
+</LinearLayout>
