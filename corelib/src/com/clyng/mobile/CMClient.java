@@ -587,6 +587,7 @@ public class CMClient {
                 Log.e(TAG, "Exception: " + ex);
             }
         } else if (intent.getAction().equals("com.clyng.NOTIFICATION_CLICK")) {
+	try {
             int messageId = intent.getIntExtra("messageId", 0);
             int htmlMessageId = intent.getIntExtra("htmlMessageId", 0);
             int campaignId = intent.getIntExtra("campaignId", 0);
@@ -601,6 +602,11 @@ public class CMClient {
             ArrayList<Message> messages = new ArrayList<Message>();
             messages.add(message);
             displayMessages(messages, messageId);
+	} catch (Throwable t) {
+                if (listener != null) {
+                    listener.onError(new Exception(t));
+                }
+            }
         }
     }
 
