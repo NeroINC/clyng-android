@@ -37,7 +37,7 @@ class WebClient extends JSONParserBase {
         String path = _client.getDeviceType().equalsIgnoreCase(CMClient.Phone) ?
                 "rulegrid/mobile/device/registerAndroidPhone" : "rulegrid/mobile/device/registerAndroidTablet";
         Map<String,Object> map = new HashMap<String, Object>();
-        map.put("apiKey", _client.getCustomerKey());
+        map.put("apiKey", _client.getApiKey());
         map.put("userId", _client.getUserId());
         map.put("identifier", _client.getDeviceToken());
         map.put("mobileDevicePlatform", _client.getPlatform());
@@ -61,7 +61,7 @@ class WebClient extends JSONParserBase {
     public void unregisterUser(final WebClientListener listener) {
         String path = "rulegrid/mobile/device/unregisterAndroid";
         Map<String,Object> map = new HashMap<String, Object>();
-        map.put("apiKey", _client.getCustomerKey());
+        map.put("apiKey", _client.getApiKey());
         map.put("userId", _client.getUserId());
         map.put("identifier", _client.getDeviceToken());
         Log.i(TAG, "identifier: " + _client.getDeviceToken());
@@ -83,7 +83,7 @@ class WebClient extends JSONParserBase {
      */
     public void getPendingMessages(final WebClientListener listener) {
         Map<String,Object> map = new HashMap<String, Object>();
-        map.put("apiKey", _client.getCustomerKey());
+        map.put("apiKey", _client.getApiKey());
         map.put("userId", _client.getUserId());
         map.put("mobileDevicePlatform", _client.getPlatform());
 
@@ -140,7 +140,7 @@ class WebClient extends JSONParserBase {
                 "rulegrid/mobile/message/getPhoneHTML" : "rulegrid/mobile/message/getTabletHTML";
 
         Map<String,Object> map = new HashMap<String, Object>();
-        map.put("apiKey", _client.getCustomerKey());
+        map.put("apiKey", _client.getApiKey());
         map.put("userId", _client.getUserId());
         map.put("htmlMessageId", htmlMessageId);
         map.put("campaignId", campaignId);
@@ -167,7 +167,7 @@ class WebClient extends JSONParserBase {
      */
     public void notifyMessageOpened(Message message, final WebClientListener listener) {
         Map<String,Object> map = new HashMap<String, Object>();
-        map.put("apiKey", _client.getCustomerKey());
+        map.put("apiKey", _client.getApiKey());
         map.put("userId", _client.getUserId());
         map.put("messageId", message.getMessageId());
         map.put("htmlMessageId", message.getHtmlMessageId());
@@ -194,7 +194,7 @@ class WebClient extends JSONParserBase {
      */
     public void setValue( final String name, final Object value, final int timeout, final WebClientListener listener ) {
         Map<String,Object> map = new HashMap<String, Object>();
-        map.put("apiKey", _client.getCustomerKey());
+        map.put("apiKey", _client.getApiKey());
         map.put("userId", _client.getUserId());
         map.put("name", name);
         map.put("value", value);
@@ -237,7 +237,7 @@ class WebClient extends JSONParserBase {
      */
     public void changeUserId(final String newUserId, final int timeout, final WebClientListener listener) {
         Map<String,Object> map = new HashMap<String, Object>();
-        map.put("apiKey", _client.getCustomerKey());
+        map.put("apiKey", _client.getApiKey());
         map.put("userId", _client.getUserId());
         map.put("newUserId", newUserId);
 
@@ -274,7 +274,7 @@ class WebClient extends JSONParserBase {
      */
     public void removeMessage( final Message message, final WebClientListener listener) {
         Map<String,Object> map = new HashMap<String, Object>();
-        map.put("apiKey", _client.getCustomerKey());
+        map.put("apiKey", _client.getApiKey());
         map.put("userId", _client.getUserId());
         map.put( message.isPush() ? "htmlMessageId" : "messageId", message.isPush() ? message.getHtmlMessageId() : message.getMessageId() );
         map.put("mobileDevicePlatform", _client.getPlatform());
@@ -296,7 +296,7 @@ class WebClient extends JSONParserBase {
     public void sendEvent(String event, Map<String,Object> params, final WebClientListener listener) {
         Map<String,Object> map = params != null ? new HashMap<String, Object>(params) : new HashMap<String, Object>();
         map.put("eventName", event);
-        map.put("apiKey", _client.getCustomerKey());
+        map.put("apiKey", _client.getApiKey());
         map.put("userId", _client.getUserId());
         // #423 fixed
         if( _client.getEmail() != null && _client.getEmail().length() != 0 )

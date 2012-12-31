@@ -39,6 +39,7 @@ public class CMClient {
 
     public static final String serverUrl = "serverUrl";
     public static final String apiKey = "apiKey";
+    public static final String appName = "appName";
 //    public static final String useGpsLocation = "useGpsLocation";
 //    public static final String UserId = "UserId";
 //    public static final String Email = "Email";
@@ -53,13 +54,20 @@ public class CMClient {
     private boolean _fullScreen = false;
     private static final String TAG = "CMClient";
 
+    public void setAppName(String _appName) {
+        this._appName = _appName;
+    }
+
+    private String _appName;
+
     /**
      * Initialization of CMCClient. Should be called before instance() call.
-     * @param context instance of Context. Can't be null
+     *
+     * @param context    instance of Context. Can't be null
      * @param properties application properties such as: serverUrl, customerKey, useGpsLocation, UserId ...
      * @return new instance of CMCClient
      */
-    public static synchronized CMClient init(Context context, Properties properties){
+    public static synchronized CMClient init(Context context, Properties properties) {
 //        ensureInstanceState(false);
         _instance = new CMClient(context, properties);
         return _instance;
@@ -67,20 +75,22 @@ public class CMClient {
 
     /**
      * Initialization of CMCClient using default properties list. Should be called before instance() call.
+     *
      * @param context instance of Context. Can't be null
      * @return new instance of CMCClient
      */
-    public static CMClient init(Context context){
+    public static CMClient init(Context context) {
         return init(context, DEFAULT_PLIST_NAME);
     }
 
     /**
      * Initialization of CMCClient. Should be called before instance() call.
-     * @param context instance of Context. Can't be null
+     *
+     * @param context            instance of Context. Can't be null
      * @param propertiesFilePath path to file with properties
      * @return new instance of CMCClient
      */
-    public static CMClient init(Context context, String propertiesFilePath){
+    public static CMClient init(Context context, String propertiesFilePath) {
         Properties properties = null;
         InputStream stream = null;
         try {
@@ -92,7 +102,7 @@ public class CMClient {
             e.printStackTrace();
             properties = null;
         } finally {
-            if(stream != null){
+            if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {
@@ -107,28 +117,30 @@ public class CMClient {
 
     /**
      * Set CMCClient Listener
+     *
      * @param clientListener - listener
      */
     public void setCMClientListener(CMClientListener clientListener) {
-          listener = clientListener;
+        listener = clientListener;
     }
 
-    private static void ensureInstanceState(boolean shouldBeNotNull){
-        if(_instance == null && shouldBeNotNull){
+    private static void ensureInstanceState(boolean shouldBeNotNull) {
+        if (_instance == null && shouldBeNotNull) {
             throw new IllegalStateException("Instance not initialized");
         }
 
-        if(_instance != null && !shouldBeNotNull){
+        if (_instance != null && !shouldBeNotNull) {
             throw new IllegalStateException("Instance already initialized");
         }
     }
 
     /**
      * Get instance of client. Init should be called first.
+     *
      * @return instance of CMCClient
      * @throws IllegalStateException if instance was not initialized
      */
-    public static CMClient instance(){
+    public static CMClient instance() {
         ensureInstanceState(true);
         return _instance;
     }
@@ -152,48 +164,51 @@ public class CMClient {
     private LocationManager _locationManager;
     private ArrayList<Message> _messageList = new ArrayList<Message>(10);
 
-    public void setContext( Context context )
-    {
+    public void setContext(Context context) {
         _context = context;
     }
 
     private CMClient(Context context, Properties properties) {
-        if(context == null){
+        if (context == null) {
             throw new NullPointerException("context can't be null");
         }
         _context = context;
         Log.i(TAG, "CMClient();  properties= " + properties);
-        if(properties != null){
+        if (properties != null) {
             _serverUrl = properties.getProperty(serverUrl);
             _customerKey = properties.getProperty(apiKey);
+            _appName = properties.getProperty(appName);
+            if (_appName == null) {
+                _appName = _context.getPackageName();
+            }
             Log.i(TAG, "CMClient();  _serverUrl= " + _serverUrl);
         }
 
         _webClient = new WebClient(this);
         _locationManager = (LocationManager) _context.getSystemService(Context.LOCATION_SERVICE);
-        if(_useGps){
+        if (_useGps) {
             requestLocationUpdates();
         }
     }
 
     private void sendResponseSuccess(CMClientListener clientListener) {
-        if(clientListener != null) {
+        if (clientListener != null) {
             clientListener.onSuccess();
-        } else if(listener != null) {
+        } else if (listener != null) {
             listener.onSuccess();
         }
     }
 
     private void sendResponseError(CMClientListener clientListener, Exception error) {
-        if(clientListener != null) {
+        if (clientListener != null) {
             clientListener.onError(error);
-        } else if(listener != null) {
+        } else if (listener != null) {
             listener.onError(error);
         }
     }
 
     private void sendResponse(CMClientListener clientListener, Exception error) {
-        if(error != null) {
+        if (error != null) {
             sendResponseError(clientListener, error);
         } else {
             sendResponseSuccess(clientListener);
@@ -202,10 +217,11 @@ public class CMClient {
 
     /**
      * Register new user
+     *
      * @param clientListener If null - used listener that have been set by calling method <b>setCMCClientListener(CMClientListener clientListener)</b>
      * @throws Exception
      */
-    public void registerUser(final CMClientListener clientListener){
+    public void registerUser(final CMClientListener clientListener) {
         _webClient.registerUser(new WebClientListener() {
             @Override
             public void response(Object data, Exception error) {
@@ -216,10 +232,11 @@ public class CMClient {
 
     /**
      * Unregister user
+     *
      * @param clientListener If null - used listener that have been set by calling method <b>setCMCClientListener(CMClientListener clientListener)</b>
      * @throws Exception
      */
-    public void unregisterUser(final CMClientListener clientListener){
+    public void unregisterUser(final CMClientListener clientListener) {
         _webClient.unregisterUser(new WebClientListener() {
             @Override
             public void response(Object data, Exception error) {
@@ -230,13 +247,14 @@ public class CMClient {
 
     /**
      * Sends event
-     * @param event event name
+     *
+     * @param event          event name
      * @param data
      * @param clientListener If null - used listener that have been set by calling method <b>setCMCClientListener(CMClientListener clientListener)</b>
      * @throws Exception
      */
-    public void sendEvent(final String event, final Map<String,Object> data, final CMClientListener clientListener) {
-        if(this._useGps && this.isLocationOutdated(_detectedLocation)){
+    public void sendEvent(final String event, final Map<String, Object> data, final CMClientListener clientListener) {
+        if (this._useGps && this.isLocationOutdated(_detectedLocation)) {
             requestLocationUpdates();
         }
 
@@ -249,7 +267,6 @@ public class CMClient {
     }
 
     /**
-     *
      * @return is full screen state
      */
     public boolean isFullScreen() {
@@ -258,6 +275,7 @@ public class CMClient {
 
     /**
      * Set up screen state
+     *
      * @param fullscreen screen state
      */
     public void setFullScreen(boolean fullscreen) {
@@ -265,7 +283,6 @@ public class CMClient {
     }
 
     /**
-     *
      * @return current user id
      */
     public String getUserId() {
@@ -274,6 +291,7 @@ public class CMClient {
 
     /**
      * Set up id of the user
+     *
      * @param userId new user id
      */
     public void setUserId(String userId) {
@@ -283,6 +301,7 @@ public class CMClient {
 
     /**
      * Retrieve current Url of the server
+     *
      * @return server Url
      */
     public String getServerUrl() {
@@ -292,6 +311,7 @@ public class CMClient {
 
     /**
      * Set up Url of the server
+     *
      * @param serverUrl new Url of the server
      */
     public void setServerUrl(String serverUrl) {
@@ -301,22 +321,36 @@ public class CMClient {
 
     /**
      * Retrieve Customer's Key
+     *
      * @return Customer Key
+     * @deprecated use getApiKey()
      */
     public String getCustomerKey() {
+        return getApiKey();
+    }
+
+
+    public String getApiKey() {
         return _customerKey;
     }
 
+
     /**
      * Set up Customer's Key
+     * @deprecated use setApiKey(...)
      * @param customerKey - new customer's key
      */
     public void setCustomerKey(String customerKey) {
-        _customerKey = customerKey;
+        setApiKey(customerKey);
+    }
+
+    public void setApiKey(String apiKey) {
+        _customerKey = apiKey;
     }
 
     /**
      * Retrieve Email
+     *
      * @return email
      */
     public String getEmail() {
@@ -325,6 +359,7 @@ public class CMClient {
 
     /**
      * Set up Email
+     *
      * @param email - new email
      */
     public void setEmail(String email) {
@@ -333,10 +368,11 @@ public class CMClient {
 
     /**
      * Retrieve current locale language
+     *
      * @return current device language
      */
     public String getLocale() {
-        if(_locale == null){
+        if (_locale == null) {
             return Locale.getDefault().getLanguage();
         }
 
@@ -345,6 +381,7 @@ public class CMClient {
 
     /**
      * Set up lacale language
+     *
      * @param locale - new locale
      */
     public void setLocale(String locale) {
@@ -353,6 +390,7 @@ public class CMClient {
 
     /**
      * Detect device location
+     *
      * @return true if Gps is used to detect device location
      */
     public boolean isUseGps() {
@@ -361,11 +399,12 @@ public class CMClient {
 
     /**
      * Use GPS to detect device location
+     *
      * @param useGps
      */
 
     public void setUseGps(boolean useGps) {
-        if(_useGps){
+        if (_useGps) {
             requestLocationUpdates();
         } else {
             stopLocationUpdates();
@@ -374,6 +413,7 @@ public class CMClient {
 
     /**
      * Retrieve current Location
+     *
      * @return current location
      */
     public Location getLocation() {
@@ -382,22 +422,24 @@ public class CMClient {
 
     /**
      * Set up Location
+     *
      * @param location - new location
      */
     public void setLocation(Location location) {
         _location = location;
     }
 
-    Location getDetectedLocation(){
+    Location getDetectedLocation() {
         return _detectedLocation;
     }
 
     /**
      * For emulator returns string "It's fake token for device emulator".
+     *
      * @return device token
      */
-    public String getDeviceToken(){
-        if("google_sdk".equals(Build.MODEL) || Build.MODEL.contains("Emulator")) {
+    public String getDeviceToken() {
+        if ("google_sdk".equals(Build.MODEL) || Build.MODEL.contains("Emulator")) {
             return "It's fake token for device emulator";
         }
 
@@ -405,7 +447,7 @@ public class CMClient {
         return prefs.getString(DEVICE_TOKEN_PREF, null);
     }
 
-    private void setDeviceToken(String token){
+    private void setDeviceToken(String token) {
         Log.i(TAG, "set Device Token; token: " + token);
         SharedPreferences prefs = _context.getSharedPreferences(SETTINGS_FILE_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -415,16 +457,17 @@ public class CMClient {
 
     /**
      * Request for pending messages
+     *
      * @param clientListener If null - used listener that have been set by calling method <b>setCMCClientListener(CMClientListener clientListener)</b>
      * @throws Exception
      */
     public void getPendingMessages(final CMClientListener clientListener) {
         _webClient.getPendingMessages(new WebClientListener() {
             public void response(Object data, Exception error) {
-                if(error == null){
+                if (error == null) {
                     addMessages((List<Message>) data);
                 }
-                if(_messageList.size() > 0){
+                if (_messageList.size() > 0) {
                     displayMessages(_messageList, 0);
                 }
                 sendResponse(clientListener, error);
@@ -443,14 +486,15 @@ public class CMClient {
 
     /**
      * Set up new parameter value
-     * @param name parameter name
-     * @param value new parameter value
+     *
+     * @param name           parameter name
+     * @param value          new parameter value
      * @param timeout
      * @param clientListener If null - used listener that have been set by calling method <b>setCMCClientListener(CMClientListener clientListener)</b>
      * @throws Exception
      * @throws NoSuchParameterException
      */
-    public void setValue( final String name, final String value, int timeout, final CMClientListener clientListener) {
+    public void setValue(final String name, final String value, int timeout, final CMClientListener clientListener) {
         _webClient.setValue(name, value, timeout, /*null*/new WebClientListener() {
 
             @Override
@@ -462,14 +506,15 @@ public class CMClient {
 
     /**
      * Set up new parameter value
-     * @param name parameter name
-     * @param value new parameter value
+     *
+     * @param name           parameter name
+     * @param value          new parameter value
      * @param timeout
      * @param clientListener If null - used listener that have been set by calling method <b>setCMCClientListener(CMClientListener clientListener)</b>
      * @throws Exception
      * @throws NoSuchParameterException
      */
-    public void setValue( final String name, final double value, int timeout, final CMClientListener clientListener ) {
+    public void setValue(final String name, final double value, int timeout, final CMClientListener clientListener) {
         _webClient.setValue(name, new Double(value), timeout, /*null*/new WebClientListener() {
 
             @Override
@@ -481,14 +526,15 @@ public class CMClient {
 
     /**
      * Set up new parameter value
-     * @param name parameter name
-     * @param value new parameter value
+     *
+     * @param name           parameter name
+     * @param value          new parameter value
      * @param timeout
      * @param clientListener If null - used listener that have been set by calling method <b>setCMCClientListener(CMClientListener clientListener)</b>
      * @throws Exception
      * @throws NoSuchParameterException
      */
-    public void setValue( final String name, final Date value, int timeout, final CMClientListener clientListener ) {
+    public void setValue(final String name, final Date value, int timeout, final CMClientListener clientListener) {
         SimpleDateFormat sdt = new SimpleDateFormat("yyyy.MM.dd");
         String val = sdt.format(value);
 
@@ -503,14 +549,15 @@ public class CMClient {
 
     /**
      * Set up new parameter value
-     * @param name parameter name
-     * @param value new parameter value
+     *
+     * @param name           parameter name
+     * @param value          new parameter value
      * @param timeout
      * @param clientListener If null - used listener that have been set by calling method <b>setCMCClientListener(CMClientListener clientListener)</b>
      * @throws Exception
      * @throws NoSuchParameterException
      */
-    public void setValue( final String name, final boolean value, int timeout, final CMClientListener clientListener ) {
+    public void setValue(final String name, final boolean value, int timeout, final CMClientListener clientListener) {
         _webClient.setValue(name, new Boolean(value), timeout, /*null*/new WebClientListener() {
 
             @Override
@@ -522,7 +569,8 @@ public class CMClient {
 
     /**
      * Request to change user id
-     * @param newUserId new user id
+     *
+     * @param newUserId      new user id
      * @param timeout
      * @param clientListener If null - used listener that have been set by calling method <b>setCMCClientListener(CMClientListener clientListener)</b>
      * @throws Exception
@@ -540,35 +588,15 @@ public class CMClient {
 
     public void handleIntent(Intent intent) {
         Log.i(TAG, "handle Intent; intent= " + intent);
-        if (intent.getAction().equals("com.google.android.c2dm.intent.REGISTRATION")){
+        if (intent.getAction().equals("com.google.android.c2dm.intent.REGISTRATION")) {
             String registrationId = intent.getStringExtra("registration_id");
-            if(registrationId != null){
+            if (registrationId != null) {
                 Log.i("DEVICE_TOKEN", registrationId);
                 setDeviceToken(registrationId);
                 registerUser(null);
             }
-
-          /*  {
-
-                NotificationManager mNotificationManager = (NotificationManager)_context.getSystemService(Context.NOTIFICATION_SERVICE);
-                final Notification notifyDetails = new Notification(R.drawable.ic_popup_reminder,"New Alert, Click Me!",System.currentTimeMillis());
-
-                CharSequence contentTitle = "Notification Details...";
-                CharSequence contentText = "Browse Android Official Site by clicking me";
-                // Intent notifyIntent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("http://www.android.com"));
-                //Intent notifyIntent = new Intent( MyActivity.this, MyActivity.class );
-                Intent notifyIntent = new Intent( "com.clyng.demo.NOTIFICATION_CLICK" );
-
-                PendingIntent intent_ =
-                        PendingIntent.getBroadcast(_context, 0,
-                                notifyIntent, android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                notifyDetails.setLatestEventInfo(_context, contentTitle, contentText, intent_);
-                mNotificationManager.notify(0, notifyDetails);
-
-            }*/
-        } else if (intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE")){
-            try{
+        } else if (intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE")) {
+            try {
                 final int htmlMessageId = Integer.parseInt(intent.getStringExtra("htmlMessageId"));
                 final int messageId = Integer.parseInt(intent.getStringExtra("messageId"));
                 final int campaignId = Integer.parseInt(intent.getStringExtra("campaignId"));
@@ -583,26 +611,26 @@ public class CMClient {
                         }
                     }
                 });
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 Log.e(TAG, "Exception: " + ex);
             }
-        } else if (intent.getAction().equals("com.clyng.NOTIFICATION_CLICK")) {
-	try {
-            int messageId = intent.getIntExtra("messageId", 0);
-            int htmlMessageId = intent.getIntExtra("htmlMessageId", 0);
-            int campaignId = intent.getIntExtra("campaignId", 0);
-            String html = intent.getStringExtra("html");
-            Message message = new Message();
-            message.setId(messageId);
-            message.setMessageId(messageId);
-            message.setHtmlMessageId(htmlMessageId);
-            message.setIsPush(true);
-            message.setHtml(html);
-            message.setCampaignId( campaignId );
-            ArrayList<Message> messages = new ArrayList<Message>();
-            messages.add(message);
-            displayMessages(messages, messageId);
-	} catch (Throwable t) {
+        } else if (intent.getAction().equals(_context.getPackageName() + ".CLYNG_NOTIFICATION_CLICK")) {
+            try {
+                int messageId = intent.getIntExtra("messageId", 0);
+                int htmlMessageId = intent.getIntExtra("htmlMessageId", 0);
+                int campaignId = intent.getIntExtra("campaignId", 0);
+                String html = intent.getStringExtra("html");
+                Message message = new Message();
+                message.setId(messageId);
+                message.setMessageId(messageId);
+                message.setHtmlMessageId(htmlMessageId);
+                message.setIsPush(true);
+                message.setHtml(html);
+                message.setCampaignId(campaignId);
+                ArrayList<Message> messages = new ArrayList<Message>();
+                messages.add(message);
+                displayMessages(messages, messageId);
+            } catch (Throwable t) {
                 if (listener != null) {
                     listener.onError(new Exception(t));
                 }
@@ -610,38 +638,36 @@ public class CMClient {
         }
     }
 
-    private void putToNotificationBar( int htmlMessageId, int messageId, int campaignId, String message, String html ){
+    private void putToNotificationBar(int htmlMessageId, int messageId, int campaignId, String message, String html) {
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager notificationManager = (NotificationManager) _context.getSystemService(ns);
         Notification notification = new Notification(R.drawable.ic_popup_reminder, message, System.currentTimeMillis());
 
-        Intent intent = new Intent("com.clyng.NOTIFICATION_CLICK");
+        Intent intent = new Intent(_context.getPackageName() + ".CLYNG_NOTIFICATION_CLICK");
         intent.putExtra("messageId", messageId);
         intent.putExtra("htmlMessageId", htmlMessageId);
         intent.putExtra("campaignId", campaignId);
         intent.putExtra("html", html);
 
-        PendingIntent contentIntent = PendingIntent.getBroadcast(_context, 0, intent, android.content.Intent.FLAG_ACTIVITY_NEW_TASK );
+        PendingIntent contentIntent = PendingIntent.getBroadcast(_context, 0, intent, android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        notification.setLatestEventInfo(_context, "Clyng", message, contentIntent);
-        notification.defaults|= Notification.DEFAULT_SOUND;
+        notification.setLatestEventInfo(_context, _appName, message, contentIntent);
+        notification.defaults |= Notification.DEFAULT_SOUND;
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notificationManager.notify(1, notification);
     }
 
     /**
-     *
      * @return "Android"
      */
-    public String getPlatform(){
+    public String getPlatform() {
         return "Android";
     }
 
     /**
-     *
      * @return whether device Phone or Tablet
      */
-    public String getDeviceType(){
+    public String getDeviceType() {
 
         if (android.os.Build.VERSION.SDK_INT >= 11) { // honeycomb
             Configuration con = _context.getResources().getConfiguration();
@@ -656,24 +682,24 @@ public class CMClient {
         return Phone;
     }
 
-    private void requestLocationUpdates(){
-        for(String provider : _locationManager.getAllProviders()){
+    private void requestLocationUpdates() {
+        for (String provider : _locationManager.getAllProviders()) {
             Location location = _locationManager.getLastKnownLocation(provider);
-            if(_detectedLocation == null){
+            if (_detectedLocation == null) {
                 _detectedLocation = location;
-            } else if(!isLocationOutdated(location)){
-                if(_detectedLocation.getAccuracy() > location.getAccuracy())
-                _detectedLocation = location;
+            } else if (!isLocationOutdated(location)) {
+                if (_detectedLocation.getAccuracy() > location.getAccuracy())
+                    _detectedLocation = location;
             }
 
             _locationManager.requestLocationUpdates(provider, 0, 0, _locationListener);
         }
 
-        if(_locationProviderTimer != null){
+        if (_locationProviderTimer != null) {
             _locationProviderTimer.cancel();
         }
         _locationProviderTimer = new Timer();
-        _locationProviderTimer.schedule(new TimerTask(){
+        _locationProviderTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 _handler.post(new Runnable() {
@@ -685,17 +711,17 @@ public class CMClient {
         }, 25 * 1000);
     }
 
-    private void stopLocationUpdates(){
+    private void stopLocationUpdates() {
         _locationManager.removeUpdates(_locationListener);
-        if(_locationProviderTimer != null){
+        if (_locationProviderTimer != null) {
             _locationProviderTimer.cancel();
             _locationProviderTimer = null;
         }
     }
 
-    private boolean isLocationOutdated(Location location){
+    private boolean isLocationOutdated(Location location) {
         return location == null ||
-                Calendar.getInstance().getTime().getTime() -  location.getTime() > 3 * 60 * 1000;
+                Calendar.getInstance().getTime().getTime() - location.getTime() > 3 * 60 * 1000;
     }
 
     /*
@@ -718,35 +744,35 @@ public class CMClient {
         return prefs.getBoolean("USER_" + userId, false);
     }*/
 
-    private void removeMessageById(int messageId){
-        for(int i = 0; i < _messageList.size(); i++){
-            if(messageId == _messageList.get(i).getId()){
+    private void removeMessageById(int messageId) {
+        for (int i = 0; i < _messageList.size(); i++) {
+            if (messageId == _messageList.get(i).getId()) {
                 _messageList.remove(i);
                 return;
             }
         }
     }
 
-    private void addMessages(List<Message> messages){
-        for(Message message : messages){
+    private void addMessages(List<Message> messages) {
+        for (Message message : messages) {
             addMessage(message);
         }
     }
 
-    private void addMessage(Message message){
-        if(message.getFilter() == MESSAGE_FILTER || Utils.isStringEmpty(message.getHtml())){
+    private void addMessage(Message message) {
+        if (message.getFilter() == MESSAGE_FILTER || Utils.isStringEmpty(message.getHtml())) {
             return;
         }
 
-        for(Message existingMessage : _messageList){
-            if(existingMessage.getId() == message.getId()){
+        for (Message existingMessage : _messageList) {
+            if (existingMessage.getId() == message.getId()) {
                 return;
             }
         }
         _messageList.add(message);
     }
 
-    private void displayMessages(ArrayList<Message> messages, int messageId){
+    private void displayMessages(ArrayList<Message> messages, int messageId) {
         Log.i(TAG, "displayMessages(); messages= " + messages);
         Intent messageIntent;
         if (_fullScreen) {
@@ -764,7 +790,7 @@ public class CMClient {
     private class LocationListenerImpl implements LocationListener {
 
         public void onLocationChanged(Location location) {
-            if(location != null){
+            if (location != null) {
                 _detectedLocation = location;
             }
         }
@@ -779,15 +805,15 @@ public class CMClient {
         }
     }
 
-    void registerActivity(Activity activity){
-        if(_currentActivity != null){
+    void registerActivity(Activity activity) {
+        if (_currentActivity != null) {
             _currentActivity.finish();
         }
         _currentActivity = activity;
     }
 
-    void unregisterActivity(Activity activity){
-        if(_currentActivity == activity){
+    void unregisterActivity(Activity activity) {
+        if (_currentActivity == activity) {
             _currentActivity = null;
         }
     }
