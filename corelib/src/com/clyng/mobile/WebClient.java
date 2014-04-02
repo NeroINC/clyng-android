@@ -38,6 +38,7 @@ class WebClient extends JSONParserBase {
                 "rulegrid/mobile/device/registerAndroidPhone" : "rulegrid/mobile/device/registerAndroidTablet";
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("apiKey", _client.getApiKey());
+//        map.put("appName", _client.getAppName());
         map.put("userId", _client.getUserId());
         map.put("identifier", _client.getDeviceToken());
         map.put("mobileDevicePlatform", _client.getPlatform());

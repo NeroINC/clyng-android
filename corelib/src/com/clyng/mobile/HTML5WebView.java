@@ -1,13 +1,14 @@
 package com.clyng.mobile;
 
+import java.io.File;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -32,10 +33,9 @@ public class HTML5WebView extends WebView {
 	
     static final String LOGTAG = "HTML5WebView";
 	    
+	@SuppressLint("SetJavaScriptEnabled")
 	private void init(Context context) {
 		mContext = context;		
-		Activity a = (Activity) mContext;
-		
 		mLayout = new FrameLayout(context);
 
         FrameLayout.LayoutParams l = new FrameLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
@@ -71,7 +71,7 @@ public class HTML5WebView extends WebView {
 	    
 	    // enable navigator.geolocation 
 	    s.setGeolocationEnabled(true);
-	    s.setGeolocationDatabasePath("/data/data/org.itri.html5webview/databases/");
+	    s.setGeolocationDatabasePath(new File(Environment.getDataDirectory(), "com.clyng.mobile").getAbsolutePath());
 	    
 	    // enable Web Storage: localStorage, sessionStorage
 	    s.setDomStorageEnabled(true);
@@ -118,8 +118,6 @@ public class HTML5WebView extends WebView {
     }
 
     private class MyWebChromeClient extends WebChromeClient {
-		private Bitmap 		mDefaultVideoPoster;
-		private View 		mVideoProgressView;
     	
     	@Override
 		public void onShowCustomView(View view, WebChromeClient.CustomViewCallback callback)

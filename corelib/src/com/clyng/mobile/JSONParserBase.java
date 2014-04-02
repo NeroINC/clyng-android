@@ -25,7 +25,7 @@ abstract class JSONParserBase {
 
 	protected boolean getBoolean(JSONObject json, String name) throws JSONException {
 		if (json.has(name) && !json.isNull(name)) {
-			Class cl = json.get(name).getClass();
+			Class<? extends Object> cl = json.get(name).getClass();
 			if (cl == Boolean.class) {
 				return json.getBoolean(name);
 			} else {

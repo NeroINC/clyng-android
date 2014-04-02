@@ -10,8 +10,9 @@ import java.io.Serializable;
  */
 class Message implements Serializable {
 
+    private static final long serialVersionUID = 1L;
 
-   /* public static class HtmlMessage  implements Serializable
+/* public static class HtmlMessage  implements Serializable
     {
         private int _customerId;
         private String _html;

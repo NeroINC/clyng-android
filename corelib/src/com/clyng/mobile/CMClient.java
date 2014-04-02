@@ -1,6 +1,19 @@
 package com.clyng.mobile;
 
-import android.R;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -17,12 +30,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -57,6 +64,7 @@ public class CMClient {
     public void setAppName(String _appName) {
         this._appName = _appName;
     }
+
 
     private String _appName;
 
@@ -463,7 +471,8 @@ public class CMClient {
      */
     public void getPendingMessages(final CMClientListener clientListener) {
         _webClient.getPendingMessages(new WebClientListener() {
-            public void response(Object data, Exception error) {
+            @SuppressWarnings("unchecked")
+			public void response(Object data, Exception error) {
                 if (error == null) {
                     addMessages((List<Message>) data);
                 }
@@ -515,7 +524,7 @@ public class CMClient {
      * @throws NoSuchParameterException
      */
     public void setValue(final String name, final double value, int timeout, final CMClientListener clientListener) {
-        _webClient.setValue(name, new Double(value), timeout, /*null*/new WebClientListener() {
+        _webClient.setValue(name, Double.valueOf(value), timeout, /*null*/new WebClientListener() {
 
             @Override
             public void response(Object data, Exception error) {
@@ -535,7 +544,7 @@ public class CMClient {
      * @throws NoSuchParameterException
      */
     public void setValue(final String name, final Date value, int timeout, final CMClientListener clientListener) {
-        SimpleDateFormat sdt = new SimpleDateFormat("yyyy.MM.dd");
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy.MM.dd", Locale.US);
         String val = sdt.format(value);
 
         _webClient.setValue(name, val, timeout, /*null*/new WebClientListener() {
@@ -558,7 +567,7 @@ public class CMClient {
      * @throws NoSuchParameterException
      */
     public void setValue(final String name, final boolean value, int timeout, final CMClientListener clientListener) {
-        _webClient.setValue(name, new Boolean(value), timeout, /*null*/new WebClientListener() {
+        _webClient.setValue(name, Boolean.valueOf(value), timeout, /*null*/new WebClientListener() {
 
             @Override
             public void response(Object data, Exception error) {
@@ -641,7 +650,7 @@ public class CMClient {
     private void putToNotificationBar(int htmlMessageId, int messageId, int campaignId, String message, String html) {
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager notificationManager = (NotificationManager) _context.getSystemService(ns);
-        Notification notification = new Notification(R.drawable.ic_popup_reminder, message, System.currentTimeMillis());
+        Notification notification = new Notification(android.R.drawable.ic_popup_reminder, message, System.currentTimeMillis());
 
         Intent intent = new Intent(_context.getPackageName() + ".CLYNG_NOTIFICATION_CLICK");
         intent.putExtra("messageId", messageId);

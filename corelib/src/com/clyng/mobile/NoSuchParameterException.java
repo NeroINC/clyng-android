@@ -8,6 +8,9 @@ package com.clyng.mobile;
  * To change this template use File | Settings | File Templates.
  */
 public class NoSuchParameterException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
     public NoSuchParameterException(String message)
     {
         super(message);

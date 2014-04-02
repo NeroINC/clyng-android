@@ -8,7 +8,10 @@ package com.clyng.mobile;
  * To change this template use File | Settings | File Templates.
  */
 public class UserAlreadyExistsException extends RuntimeException {
-    public UserAlreadyExistsException(String message) {
+
+    private static final long serialVersionUID = 1L;
+
+	public UserAlreadyExistsException(String message) {
         super( message );
     }
 }

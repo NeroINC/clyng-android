@@ -31,6 +31,7 @@ public abstract class SwipeDetector implements View.OnTouchListener {
                 upY = event.getY();
 
                 float deltaX = downX - upX;
+                @SuppressWarnings("unused")
                 float deltaY = downY - upY;
 
                 // swipe horizontal?

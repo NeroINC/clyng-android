@@ -1,24 +1,27 @@
 package com.clyng.mobile;
 
+import java.util.List;
+
+import org.apache.http.protocol.HTTP;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.widget.*;
-import org.apache.http.protocol.HTTP;
-
-import java.util.List;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,9 +29,9 @@ import java.util.List;
  * Date: 5/22/12
  * Time: 15:05
  */
+@SuppressLint("SetJavaScriptEnabled")
 public class MessageActivity extends Activity {
 
-    private static final String TAG = "MessageActivity";
     private HTML5WebView _webView;
     private List<Message> _messagesList;
     private int _index;
@@ -41,7 +44,8 @@ public class MessageActivity extends Activity {
     private ProgressBar _progressBar;
     Handler handler = new Handler();
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

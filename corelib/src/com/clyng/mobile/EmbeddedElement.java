@@ -10,6 +10,8 @@ import java.io.Serializable;
  */
 class EmbeddedElement implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String _display;
     private String _removeAct;
     private int _width;
